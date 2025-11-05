@@ -1,0 +1,37 @@
+{
+  "name": "avevapi",
+  "version": "1.0.0",
+  "description": "AVEVA PI mock backend Node.js version",
+  "main": "main.js",
+  "type": "module",
+  "scripts": {
+    "start": "node main.js",
+    "dev": "nodemon main.js",
+    "plugins": "node -e \"import('./core/plugin-loader.js').then(m => m.pluginLoader.loadAllPlugins().then(() => console.log('Plugins loaded:', Array.from(m.pluginLoader.getAllPlugins().keys()))))\""
+  },
+  "dependencies": {
+    "axios": "^1.11.0",
+    "bcrypt": "^5.1.1",
+    "better-sqlite3": "^12.4.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.11.2",
+    "express-validator": "^6.15.0",
+    "fetch-cookie": "^3.1.0",
+    "helmet": "^6.2.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.6.0",
+    "node-fetch": "^3.3.2",
+    "oracledb": "^6.9.0",
+    "pg": "^8.16.3",
+    "tough-cookie": "^6.0.0",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.36.0",
+    "nodemon": "^2.0.22"
+  }
+}

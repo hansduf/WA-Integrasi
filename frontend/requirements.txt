@@ -1,0 +1,35 @@
+# AVEVA-PI Frontend Dependencies
+# File: frontend/requirements.txt
+# Generated: October 31, 2025
+# Total dependencies: 12
+# ⚠️  Note: Version conflicts detected - use recommended versions below
+
+# Core Framework (Recommended versions to avoid conflicts)
+next@14.2.0
+react@18.2.0
+react-dom@18.2.0
+
+# TypeScript
+typescript@5.9.2
+@types/node@20.19.11
+@types/react@18.3.12
+@types/react-dom@18.3.12
+
+# Styling
+tailwindcss@4.1.12
+@tailwindcss/postcss@4.1.12
+
+# Development Tools
+eslint@9.34.0
+eslint-config-next@15.5.2
+@eslint/eslintrc@3.3.1
+
+# ============================================
+# RECOMMENDED INSTALLATION (to fix version conflicts):
+# npm install next@14.2.0 react@18.2.0 react-dom@18.2.0 typescript@5.9.2 @types/node@20.19.11 @types/react@18.3.12 @types/react-dom@18.3.12 tailwindcss@4.1.12 @tailwindcss/postcss@4.1.12 eslint@9.34.0 eslint-config-next@15.5.2 @eslint/eslintrc@3.3.1
+#
+# Or run: npm install (if package.json is correct)
+#
+# If conflicts persist, try:
+# npm install --legacy-peer-deps
+# ============================================

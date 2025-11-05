@@ -1,0 +1,144 @@
+{
+  "driver": "oracle",
+  "defaultPort": 1521,
+  "requiredFields": ["host", "port", "user", "service"],
+  "optionalFields": ["password", "connectionLimit", "connectTimeout", "acquireTimeout"],
+  "fieldLabels": {
+    "host": "Host/Server",
+    "port": "Port",
+    "service": "Service Name/SID",
+    "user": "Username",
+    "password": "Password",
+    "connectionLimit": "Connection Pool Size",
+    "connectTimeout": "Connection Timeout (ms)",
+    "acquireTimeout": "Acquire Timeout (ms)"
+  },
+  "fieldDescriptions": {
+    "host": "Oracle server hostname or IP address",
+    "port": "Oracle listener port (default: 1521)",
+    "service": "Oracle Service Name (e.g., ORCL) or SID",
+    "user": "Oracle database username",
+    "password": "Oracle database password",
+    "connectionLimit": "Maximum number of connections in pool (default: 10)",
+    "connectTimeout": "Connection timeout in milliseconds (default: 60000)",
+    "acquireTimeout": "Connection acquire timeout in milliseconds (default: 60000)"
+  },
+  "fieldPlaceholders": {
+    "host": "oracle-server.company.com",
+    "port": "1521",
+    "service": "ORCL",
+    "user": "scott",
+    "password": "Enter password",
+    "connectionLimit": "10",
+    "connectTimeout": "60000",
+    "acquireTimeout": "60000"
+  },
+  "fieldDefaults": {
+    "port": 1521,
+    "connectionLimit": 10,
+    "connectTimeout": 60000,
+    "acquireTimeout": 60000
+  },
+  "fieldTypes": {
+    "host": "string",
+    "port": "number",
+    "service": "string",
+    "user": "string",
+    "password": "password",
+    "connectionLimit": "number",
+    "connectTimeout": "number",
+    "acquireTimeout": "number"
+  },
+  "fields": [
+    {
+      "name": "host",
+      "type": "string",
+      "required": true,
+      "label": "Host/Server",
+      "description": "Oracle server hostname or IP address",
+      "placeholder": "oracle-server.company.com"
+    },
+    {
+      "name": "port",
+      "type": "number",
+      "required": true,
+      "label": "Port",
+      "description": "Oracle listener port",
+      "placeholder": "1521",
+      "default": 1521,
+      "min": 1,
+      "max": 65535
+    },
+    {
+      "name": "service",
+      "type": "string",
+      "required": true,
+      "label": "Service Name/SID",
+      "description": "Oracle Service Name (preferred) or SID",
+      "placeholder": "ORCL"
+    },
+    {
+      "name": "user",
+      "type": "string",
+      "required": true,
+      "label": "Username",
+      "description": "Oracle database username",
+      "placeholder": "scott"
+    },
+    {
+      "name": "password",
+      "type": "password",
+      "required": false,
+      "label": "Password",
+      "description": "Oracle database password",
+      "placeholder": "Enter password"
+    },
+    {
+      "name": "connectionLimit",
+      "type": "number",
+      "required": false,
+      "label": "Connection Pool Size",
+      "description": "Maximum number of connections in pool",
+      "placeholder": "10",
+      "default": 10,
+      "min": 1,
+      "max": 100
+    },
+    {
+      "name": "connectTimeout",
+      "type": "number",
+      "required": false,
+      "label": "Connection Timeout (ms)",
+      "description": "Connection timeout in milliseconds",
+      "placeholder": "60000",
+      "default": 60000,
+      "min": 1000,
+      "max": 300000
+    }
+  ],
+  "advancedFields": [
+    {
+      "name": "acquireTimeout",
+      "type": "number",
+      "required": false,
+      "label": "Acquire Timeout (ms)",
+      "description": "Connection acquire timeout in milliseconds",
+      "placeholder": "60000",
+      "default": 60000,
+      "min": 1000,
+      "max": 300000
+    }
+  ],
+  "connectionNotes": [
+    "Oracle Instant Client may be required for some environments",
+    "Service Name is preferred over SID for modern Oracle installations",
+    "Ensure the Oracle listener is running on the specified port",
+    "Database user must have appropriate privileges for schema discovery"
+  ],
+  "troubleshooting": [
+    "ORA-12541: TNS:no listener - Check if Oracle listener is running",
+    "ORA-12514: TNS:listener does not know of service - Verify service name",
+    "ORA-01017: invalid username/password - Check credentials",
+    "ORA-12545: Connect failed - Network or firewall issue"
+  ]
+}

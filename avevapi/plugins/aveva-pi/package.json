@@ -1,0 +1,7 @@
+{
+  "name": "aveva-pi-plugin",
+  "version": "1.0.0",
+  "description": "Plugin for AVEVA PI Process Information System",
+  "main": "index.js",
+  "type": "module"
+}

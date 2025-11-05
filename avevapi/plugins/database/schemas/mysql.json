@@ -1,0 +1,132 @@
+{
+  "driver": "mysql",
+  "defaultPort": 3306,
+  "requiredFields": ["host", "port", "user", "database"],
+  "optionalFields": ["password", "connectionLimit", "connectTimeout", "acquireTimeout"],
+  "fieldLabels": {
+    "host": "Host/Server",
+    "port": "Port",
+    "database": "Database Name",
+    "user": "Username",
+    "password": "Password",
+    "connectionLimit": "Connection Pool Size",
+    "connectTimeout": "Connection Timeout (ms)",
+    "acquireTimeout": "Acquire Timeout (ms)"
+  },
+  "fieldDescriptions": {
+    "host": "Database server hostname or IP address",
+    "port": "Database server port (default: 3306)",
+    "database": "Database name to connect to",
+    "user": "Database user username",
+    "password": "Database user password (optional)",
+    "connectionLimit": "Maximum number of connections in pool (default: 10)",
+    "connectTimeout": "Connection timeout in milliseconds (default: 60000)",
+    "acquireTimeout": "Connection acquire timeout in milliseconds (default: 60000)"
+  },
+  "fieldPlaceholders": {
+    "host": "localhost",
+    "port": "3306",
+    "database": "my_database",
+    "user": "root",
+    "password": "Enter password",
+    "connectionLimit": "10",
+    "connectTimeout": "60000",
+    "acquireTimeout": "60000"
+  },
+  "fieldDefaults": {
+    "port": 3306,
+    "connectionLimit": 10,
+    "connectTimeout": 60000,
+    "acquireTimeout": 60000
+  },
+  "fieldTypes": {
+    "host": "string",
+    "port": "number",
+    "database": "string",
+    "user": "string",
+    "password": "password",
+    "connectionLimit": "number",
+    "connectTimeout": "number",
+    "acquireTimeout": "number"
+  },
+  "fields": [
+    {
+      "name": "host",
+      "type": "string",
+      "required": true,
+      "label": "Host/Server",
+      "description": "Database server hostname or IP address",
+      "placeholder": "localhost"
+    },
+    {
+      "name": "port",
+      "type": "number",
+      "required": true,
+      "label": "Port",
+      "description": "Database server port",
+      "placeholder": "3306",
+      "default": 3306,
+      "min": 1,
+      "max": 65535
+    },
+    {
+      "name": "database",
+      "type": "string",
+      "required": true,
+      "label": "Database Name",
+      "description": "Database name to connect to",
+      "placeholder": "my_database"
+    },
+    {
+      "name": "user",
+      "type": "string",
+      "required": true,
+      "label": "Username",
+      "description": "Database user username",
+      "placeholder": "root"
+    },
+    {
+      "name": "password",
+      "type": "password",
+      "required": false,
+      "label": "Password",
+      "description": "Database user password",
+      "placeholder": "Enter password"
+    },
+    {
+      "name": "connectionLimit",
+      "type": "number",
+      "required": false,
+      "label": "Connection Pool Size",
+      "description": "Maximum number of connections in pool",
+      "placeholder": "10",
+      "default": 10,
+      "min": 1,
+      "max": 100
+    },
+    {
+      "name": "connectTimeout",
+      "type": "number",
+      "required": false,
+      "label": "Connection Timeout (ms)",
+      "description": "Connection timeout in milliseconds",
+      "placeholder": "60000",
+      "default": 60000,
+      "min": 1000,
+      "max": 300000
+    }
+  ],
+  "advancedFields": [
+    {
+      "name": "acquireTimeout",
+      "type": "number",
+      "required": false,
+      "label": "Acquire Timeout (ms)",
+      "description": "Connection acquire timeout in milliseconds",
+      "placeholder": "60000",
+      "default": 60000,
+      "min": 1000,
+      "max": 300000
+    }
+  ]
+}

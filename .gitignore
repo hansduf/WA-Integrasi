@@ -1,0 +1,148 @@
+# ==========================================
+# Unified .gitignore for AVEVA PI Project
+# Combines rules from avevapi/, frontend/, and wa/
+# ==========================================
+
+# ==========================================
+# Node.js & Dependencies (All folders)
+# ==========================================
+node_modules/
+/.pnp
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+npm-debug.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ==========================================
+# Environment & Secrets
+# ==========================================
+.env
+.env.local
+.env.*.local
+.env.production.local
+
+# ==========================================
+# IDE & Editor
+# ==========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# ==========================================
+# OS Files
+# ==========================================
+Thumbs.db
+.DS_Store
+desktop.ini
+*.pem
+
+# ==========================================
+# Logs & Debug
+# ==========================================
+*.log
+*.pot
+*.mo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+wa-bot.log
+wa-bot-error.log
+.cache
+
+# ==========================================
+# Database Files (Keep .db structure, ignore data)
+# ==========================================
+data/*.db-shm
+data/*.db-wal
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# ==========================================
+# Frontend (Next.js)
+# ==========================================
+/.next/
+/out/
+/build
+/dist/
+.next
+next-env.d.ts
+*.tsbuildinfo
+.vercel
+
+# ==========================================
+# Backend (Build & Temp)
+# ==========================================
+dist/
+build/
+tmp/
+temp/
+*.tgz
+*.tar.gz
+
+# ==========================================
+# Testing & Coverage
+# ==========================================
+coverage/
+.nyc_output/
+*.lcov
+test-results/
+
+# ==========================================
+# WhatsApp Bot Specific
+# ==========================================
+.wwebjs_cache/
+.wwebjs_auth/
+sessions/
+.status/
+downloads/
+failed-messages/
+
+# ==========================================
+# Archives & Backups
+# ==========================================
+*.zip
+*.rar
+*.7z
+*.backup
+*.bak
+
+# ==========================================
+# Local Configuration
+# ==========================================
+.eslintcache
+.prettierignore
+.stylelintignore
+.cache
+
+# ==========================================
+# Misc & Generated Files
+# ==========================================
+test-*.json
+debug-*.js
+spam-frequency-config.json.backup
+install.txt
+
+# ==========================================
+# Archive Folder (contains migrated/old files)
+# ==========================================
+archive/

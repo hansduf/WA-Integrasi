@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# WhatsApp Web Cache & Sessions
+.wwebjs_cache/
+.wwebjs_auth/
+sessions/
+.status/
+
+# Downloads & Data
+downloads/
+data/
+failed-messages/
+
+# Logs
+*.log
+wa-bot.log
+wa-bot-error.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS specific
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Backup files
+*.backup
+spam-frequency-config.json.backup

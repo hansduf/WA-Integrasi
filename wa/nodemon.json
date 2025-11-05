@@ -1,0 +1,14 @@
+{
+  "watch": ["*.js"],
+  "ignore": [
+    ".status",
+    "whatsapp-status.json",
+    "node_modules",
+    ".wwebjs_auth",
+    ".wwebjs_cache",
+    "sessions",
+    "downloads"
+  ],
+  "ext": "js,json",
+  "delay": 1000
+}

@@ -1,0 +1,55 @@
+# WhatsApp Bot Dependencies (wa/)
+# Generated from package.json (npm dependencies)
+# Date: November 3, 2025
+
+# CORE DEPENDENCIES (9 packages)
+# ========================================
+
+# HTTP client for API calls to backend
+axios@^1.7.2
+
+# Configuration management from .env file
+dotenv@^16.4.5
+
+# Multipart/form-data for file uploads
+form-data@^4.0.1
+
+# Node.js file system (pseudo-package)
+fs@^0.0.1-security
+
+# Node.js path utilities (pseudo-package)
+path@^0.12.7
+
+# Browser automation for WhatsApp Web
+puppeteer@^24.25.0
+
+# QR code generation to PNG file
+qrcode@^1.5.4
+
+# QR code display in terminal
+qrcode-terminal@^0.12.0
+
+# WhatsApp Web API integration
+whatsapp-web.js@^1.33.2
+
+
+# DEVELOPMENT DEPENDENCIES (1 package)
+# ========================================
+
+# Auto-restart server on file changes (dev only)
+nodemon@^3.1.10
+
+
+# INSTALLATION
+# ========================================
+# Install all dependencies:
+#   npm install
+#
+# Install specific version:
+#   npm install whatsapp-web.js@1.33.2
+#
+# Update all packages:
+#   npm update
+#
+# Remove a package:
+#   npm uninstall package-name
