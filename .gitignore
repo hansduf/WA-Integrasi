@@ -71,8 +71,9 @@ wa-bot-error.log
 # ==========================================
 # Database Files (Keep .db structure, ignore data)
 # ==========================================
-data/*.db-shm
-data/*.db-wal
+data/
+*.db-shm
+*.db-wal
 *.sqlite
 *.sqlite3
 *.db-journal
