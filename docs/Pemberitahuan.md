@@ -1,1 +1,0 @@
-Setiap folder dalam proyek — yaitu backend (aveapi), frontend (frontend), dan WhatsApp bot (wa) — memiliki repository Git masing-masing. Dengan begitu, setiap bagian dikelola dan di-commit secara independen, bukan dalam satu repo gabungan.

@@ -143,6 +143,7 @@ spam-frequency-config.json.backup
 install.txt
 
 # ==========================================
-# Archive Folder (contains migrated/old files)
+# Documentation & Archive (Local Development Only)
 # ==========================================
 archive/
+docs/
