@@ -5,7 +5,7 @@ import AuditLogs from './AuditLogs';
 import UsersManagement from './UsersManagement';
 
 export default function ManagementHub() {
-  const [activeTab, setActiveTab] = useState<'users' | 'security' | 'audit'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'audit'>('users');
   const [searchTerm, setSearchTerm] = useState('');
 
   return (
