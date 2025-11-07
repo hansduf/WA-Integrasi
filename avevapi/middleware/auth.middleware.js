@@ -9,15 +9,6 @@ import { getClientIP, getUserAgent, sanitizeUser, verifyAccessToken } from '../u
  */
 export async function authenticateToken(req, res, next) {
   try {
-    // DEBUG: Log request details with more info
-    console.log('=== AUTH MIDDLEWARE DEBUG ===');
-    console.log('URL:', req.url);
-    console.log('Method:', req.method);
-    console.log('Cookie header:', req.headers.cookie);
-    console.log('Raw cookies:', req.cookies);
-    console.log('Cookie keys:', req.cookies ? Object.keys(req.cookies) : 'undefined');
-    console.log('Headers:', req.headers.authorization);
-    
     // Get token from cookie or Authorization header
     const token = req.cookies?.accessToken || 
                   req.headers.authorization?.replace('Bearer ', '');
@@ -26,7 +17,6 @@ export async function authenticateToken(req, res, next) {
     console.log('Token length:', token?.length);
 
     if (!token) {
-      console.log('❌ No token found');
       return res.status(401).json({
         success: false,
         error: 'unauthorized',
@@ -60,7 +50,6 @@ export async function authenticateToken(req, res, next) {
     if (decoded.error) {
       // For expired tokens, this represents session expiry - log audit event
       if (decoded.error === 'expired') {
-        console.log('🔥 JWT TOKEN EXPIRED - Logging SESSION_EXPIRED audit event...');
         // Get user info for audit logging (if possible)
         let userId = null;
         let userAgent = getUserAgent(req);
@@ -81,7 +70,6 @@ export async function authenticateToken(req, res, next) {
           ipAddress,
           userAgent
         });
-        console.log('✅ SESSION_EXPIRED audit log recorded for JWT expiry');
       }
 
       // Clear invalid/expired cookie and signal frontend to logout
@@ -246,14 +234,6 @@ export async function authenticateToken(req, res, next) {
     req.user = sanitizeUser(user);
     // Include role from JWT payload (all users are admin in current system)
     req.user.role = decoded.role || 'admin';
-
-    console.log('✅ Auth successful:', {
-      userId: req.user.id,
-      username: req.user.username,
-      role: req.user.role,
-      sessionId: req.sessionId,
-      jwtRole: decoded.role
-    });
 
     next();
   } catch (error) {

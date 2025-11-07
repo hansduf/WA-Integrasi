@@ -5,7 +5,7 @@ import { dualAuthMiddleware } from '../middleware/dual-auth.middleware.js';
 import {
   logTriggerExecuted
 } from '../utils/audit.utils.js';
-import { callAvevApiUrl } from '../utils/preprocessing.js';
+import { callAvevApiUrl } from '../utils/preprocessing.utils.js';
 import { getClientIP, getUserAgent } from '../utils/security.utils.js';
 import { invalidateTriggerCountsCache } from './data-sources.js';
 
@@ -322,8 +322,7 @@ router.post('/ask', async (req, res) => {
       const group = triggerGroupsData.groups && triggerGroupsData.groups[groupId] ? triggerGroupsData.groups[groupId] : null;
       if (!group || !group.triggers || group.triggers.length === 0) continue;
 
-      console.log(`🎯 Executing trigger group: ${groupName} (${groupId})`);
-      console.log(`📋 Group contains ${group.triggers.length} triggers: ${group.triggers.join(', ')}`);
+
 
       try {
         const results = [];
@@ -335,12 +334,11 @@ router.post('/ask', async (req, res) => {
         // We just need to execute them and collect results!
         for (const triggerName of group.triggers) {
           try {
-            console.log(`▶️ Calling individual trigger: ${triggerName}`);
+
 
             // Check if trigger exists and is active
             const triggerId = triggers.names[triggerName];
             if (!triggerId) {
-              console.log(`⚠️ Trigger not found: ${triggerName}`);
               results.push(`- ${triggerName}: ⚠️ Trigger tidak ditemukan`);
               errorCount++;
               continue;
@@ -348,7 +346,6 @@ router.post('/ask', async (req, res) => {
 
             const triggerBehavior = triggers.behaviors[triggerId];
             if (!triggerBehavior || triggerBehavior.active === false) {
-              console.log(`⚠️ Skipping inactive trigger: ${triggerName}`);
               results.push(`- ${triggerName}: ⚠️ Trigger tidak aktif`);
               errorCount++;
               continue;
@@ -373,7 +370,6 @@ router.post('/ask', async (req, res) => {
                 const behavior = triggers.behaviors && triggers.behaviors[bid] ? triggers.behaviors[bid] : null;
                 if (behavior && behavior.active !== false && behavior.type === 'QUERY' && behavior.api_url) {
                   // Execute QUERY trigger
-                  console.log(`🔍 [GROUP] Trigger ${triggerName} has interval:`, behavior.interval);
                   const { dataSourceManager } = await import('../core/data-source-manager.js');
                   
                   const queryParams = {
@@ -382,7 +378,6 @@ router.post('/ask', async (req, res) => {
                     units: behavior.units,
                     ...(behavior.interval && { interval: behavior.interval })
                   };
-                  console.log(`🔍 [GROUP] Query params:`, queryParams);
                   
                   const queryResult = await dataSourceManager.executeQuery(behavior.dataSourceId, queryParams);
                   
@@ -448,7 +443,7 @@ router.post('/ask', async (req, res) => {
         answer += `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
         answer += `✅ *${successCount}* berhasil, ❌ *${errorCount}* gagal`;
 
-        console.log(`✅ Group execution completed: ${successCount} success, ${errorCount} errors`);
+
         return res.json({ answer });
 
       } catch (groupError) {
@@ -469,13 +464,11 @@ router.post('/ask', async (req, res) => {
       // Handle API type triggers
       if (triggerType === 'API' && behavior.api_url) {
         try {
-          console.log(`🔍 Calling API URL: ${behavior.api_url}`);
           const latest = await callAvevApiUrl(behavior.api_url);
           const waktu = new Date(latest.v0).toLocaleString();
           const nilaiBulat = Number(latest.v1).toFixed(2);
           const customPrefix = behavior.responsePrefix || 'Data';
           const answer = `*${customPrefix}*: *${nilaiBulat}* (waktu: ${waktu})`;
-          console.log(`✅ API Response: ${answer}`);
 
           // Audit logging for API trigger execution
           try {
@@ -502,7 +495,6 @@ router.post('/ask', async (req, res) => {
       // Handle COMPOSITE type triggers (multiple API calls)
       else if (triggerType === 'COMPOSITE' && behavior.composite_triggers) {
         try {
-          console.log(`🔗 Processing composite trigger: ${name}`);
           const results = [];
           for (const triggerName of behavior.composite_triggers) {
             // First resolve trigger name to behavior ID
@@ -510,8 +502,6 @@ router.post('/ask', async (req, res) => {
             const triggerBehavior = triggers.behaviors[triggerId];
             if (triggerBehavior && triggerBehavior.active !== false) {
               try {
-                console.log(`  🔗 Calling member trigger: ${triggerName} (${triggerId})`);
-                
                 let triggerResult = '';
                 const prefix = triggerBehavior.responsePrefix || 'Data';
 
@@ -571,7 +561,6 @@ router.post('/ask', async (req, res) => {
                 console.error(`  ❌ Error calling ${triggerName}:`, err.message);
               }
             } else {
-              console.log(`  ⚠️ Skipping inactive/invalid trigger: ${triggerName}`);
               results.push(`- ${triggerName}: ⚠️ Trigger tidak aktif atau tidak valid`);
             }
           }
@@ -589,10 +578,6 @@ router.post('/ask', async (req, res) => {
       // Handle QUERY type triggers (new preset-based triggers)
       else if (triggerType === 'QUERY' && behavior.api_url) {
         try {
-          console.log(`🔍 Executing query trigger: ${name}`);
-          console.log(`📊 Query: ${behavior.api_url}`);
-          console.log(`🔗 Data Source: ${behavior.dataSourceId}`);
-
           // Get data source info
           const dataSourceId = behavior.dataSourceId;
           if (!dataSourceId) {
@@ -623,7 +608,6 @@ router.post('/ask', async (req, res) => {
               // Add dualQuery if specified in trigger configuration
               if (behavior.dualQuery === true) {
                 parameters.dualQuery = true;
-                console.log(`🔧 AVEVA PI dual query enabled for preset trigger: ${name}`);
               }
               
               queryParams = {
@@ -631,7 +615,6 @@ router.post('/ask', async (req, res) => {
                 parameters: parameters,
                 units: behavior.units // Pass units from trigger configuration
               };
-              console.log(`🔧 AVEVA PI preset trigger detected, using interval: ${behavior.api_url}, dualQuery: ${behavior.dualQuery}`);
             } else {
               // api_url is a SQL query, use behavior.interval if available
               const interval = behavior.interval || '1h'; // Default to 1h if no interval specified
@@ -643,7 +626,6 @@ router.post('/ask', async (req, res) => {
               // Add dualQuery if specified in trigger configuration
               if (behavior.dualQuery === true) {
                 parameters.dualQuery = true;
-                console.log(`🔧 AVEVA PI dual query enabled for trigger: ${name}`);
               }
               
               queryParams = {
@@ -651,7 +633,6 @@ router.post('/ask', async (req, res) => {
                 parameters: parameters,
                 units: behavior.units // Pass units from trigger configuration
               };
-              console.log(`🔧 AVEVA PI SQL trigger detected, using query: ${behavior.api_url}, interval: ${interval}, tag: ${dataSource.config.defaultTag}, dualQuery: ${behavior.dualQuery}`);
             }
           } else {
             // For other plugins, use api_url as query
@@ -664,8 +645,6 @@ router.post('/ask', async (req, res) => {
 
           // Execute query through data source manager
           const queryResult = await dataSourceManager.executeQuery(dataSourceId, queryParams);
-
-          console.log(`✅ Query executed successfully, result:`, queryResult);
 
           // Format response based on result type
           let formattedResult = '';
@@ -782,8 +761,6 @@ router.post('/triggers', dualAuthMiddleware, (req, res) => {
   try {
     const { key, api_url, desc, responsePrefix, aliases, active, type, composite_triggers } = req.body;
     
-    console.log(`➕ Creating new trigger: ${key}`, { type, api_url });
-
     // Validation based on trigger type
     if (type === 'COMPOSITE') {
       if (!key || !composite_triggers || !Array.isArray(composite_triggers) || composite_triggers.length === 0) {
@@ -867,8 +844,6 @@ router.get('/triggers', dualAuthMiddleware, (req, res) => {
       createdAt: trigger.created_at,
       updatedAt: trigger.updated_at
     }));
-
-    console.log(`📋 Returning ${triggerArray.length} triggers`);
     
     res.json({
       success: true,
@@ -933,8 +908,6 @@ router.put('/triggers/:id', dualAuthMiddleware, (req, res) => {
     const triggerId = req.params.id;
     const { api_url, desc, responsePrefix, active } = req.body;
 
-    console.log(`📝 Updating trigger: ${triggerId}`, { api_url, desc, responsePrefix, active });
-
     // Find trigger
     let trigger = db.preparedStatements.getTrigger.get(triggerId);
 
@@ -966,8 +939,6 @@ router.put('/triggers/:id', dualAuthMiddleware, (req, res) => {
 
     updateStmt.run(JSON.stringify(config), trigger.id);
 
-    console.log(`✅ Trigger updated: ${trigger.id}`);
-
     // Invalidate caches
     invalidateTriggerCountsCache();
     triggerEngine.invalidateCache();
@@ -984,8 +955,6 @@ router.put('/triggers/:id', dualAuthMiddleware, (req, res) => {
 router.delete('/triggers/:id', dualAuthMiddleware, (req, res) => {
   try {
     const triggerId = req.params.id;
-
-    console.log(`🔕 Deactivating trigger: ${triggerId}`);
 
     // Find trigger
     let trigger = db.preparedStatements.getTrigger.get(triggerId);
@@ -1013,8 +982,6 @@ router.delete('/triggers/:id', dualAuthMiddleware, (req, res) => {
 
     updateStmt.run(JSON.stringify(config), trigger.id);
 
-    console.log(`✅ Trigger deactivated: ${trigger.id}`);
-
     // Invalidate caches
     invalidateTriggerCountsCache();
     triggerEngine.invalidateCache();
@@ -1032,9 +999,7 @@ router.delete('/triggers/:id/permanent', dualAuthMiddleware, (req, res) => {
   try {
     const triggerId = req.params.id;
 
-    console.log(`🗑️ Attempting to delete trigger: ${triggerId}`);
-
-    // Try to find trigger by ID first
+    // Find trigger
     let trigger = db.preparedStatements.getTrigger.get(triggerId);
 
     // If not found, try to find by name (for backward compatibility)
@@ -1051,11 +1016,8 @@ router.delete('/triggers/:id/permanent', dualAuthMiddleware, (req, res) => {
     const result = db.preparedStatements.deleteTrigger.run(trigger.id);
 
     if (result.changes === 0) {
-      console.warn(`⚠️ Trigger was not deleted (database error): ${trigger.id}`);
       return res.status(500).json({ error: 'Failed to delete trigger from database' });
     }
-
-    console.log(`✅ Trigger deleted successfully: ${trigger.id} (${trigger.name})`);
 
     // Invalidate caches
     invalidateTriggerCountsCache();

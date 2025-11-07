@@ -8,10 +8,10 @@ import { pluginLoader } from '../core/plugin-loader.js';
 import { triggerEngine } from '../core/trigger-engine.js';
 import db from '../lib/database.js';
 import {
-    logDataSourceCreated,
-    logDataSourceDeleted,
-    logDataSourceTested,
-    logDataSourceUpdated
+  logDataSourceCreated,
+  logDataSourceDeleted,
+  logDataSourceTested,
+  logDataSourceUpdated
 } from '../utils/audit.utils.js';
 import { getClientIP, getUserAgent } from '../utils/security.utils.js';
 
@@ -27,7 +27,6 @@ const triggerCountsCacheTTL = 5 * 60 * 1000; // 5 minutes
  * Invalidate the trigger counts cache
  */
 function invalidateTriggerCountsCache() {
-  console.log('🗑️ Invalidating trigger counts cache');
   triggerCountsCache = null;
   triggerCountsCacheTimestamp = null;
 }
@@ -151,7 +150,6 @@ async function getDatabasePreview(dataSourceId) {
       : (!plugin.pool && !plugin.connection);
 
     if (needsReconnect) {
-      console.log(`🔄 Reconnecting plugin for ${dataSourceId}...`);
       try {
         const freshPlugin = pluginLoader.getPlugin(dataSource.plugin);
         // Prepare plugin config with additional fields for specific plugins
@@ -172,11 +170,9 @@ async function getDatabasePreview(dataSourceId) {
     };
 
     // Discover schema fresh for preview
-    console.log(`🔎 Discovering fresh schema for preview...`);
     let freshSchema;
     try {
       freshSchema = await plugin.discoverSchema();
-      console.log(`✅ Fresh schema discovered: ${freshSchema?.tables?.length || 0} tables`);
     } catch (schemaError) {
       console.warn(`⚠️ Schema discovery failed: ${schemaError.message}`);
       // Fallback to stored schema if fresh discovery fails
@@ -189,7 +185,6 @@ async function getDatabasePreview(dataSourceId) {
       : dataSource.schema?.tables || [];
 
     for (const tableName of tables) {
-      console.log(`🔍 Processing table: ${tableName}`);
       try {
         // Build database-specific queries
         let countQuery, sampleQuery;
@@ -208,12 +203,10 @@ async function getDatabasePreview(dataSourceId) {
         // Get record count
         const countResult = await plugin.query({ query: countQuery });
         const recordCount = countResult ? countResult[0]?.count || 0 : 0;
-        console.log(`📊 Table ${tableName} has ${recordCount} records`);
 
         // Get sample data (max 3 rows)
         const sampleData = await plugin.query({ query: sampleQuery });
         const sampleRows = sampleData || [];
-        console.log(`📋 Sample data for ${tableName}: ${sampleRows.length} rows`);
 
         // Get table structure from fresh schema (fallback to stored)
         const fields = freshSchema?.fields?.[tableName] || dataSource.schema?.fields?.[tableName] || [];
@@ -244,8 +237,6 @@ async function getDatabasePreview(dataSourceId) {
     }
 
     preview.totalTables = preview.tables.length;
-
-    console.log(`✅ Database preview completed: ${preview.totalTables} tables, ${preview.totalRecords} total records`);
     return preview;
 
   } catch (error) {
@@ -258,11 +249,9 @@ async function countTriggersPerDataSource() {
   if (triggerCountsCache && 
       triggerCountsCacheTimestamp && 
       (Date.now() - triggerCountsCacheTimestamp) < triggerCountsCacheTTL) {
-    console.log('📊 Returning cached trigger counts');
     return triggerCountsCache;
   }
 
-  console.log('🔄 Computing fresh trigger counts');
   try {
     const fs = await import('fs');
     const path = await import('path');
@@ -285,7 +274,6 @@ async function countTriggersPerDataSource() {
     // Update cache
     triggerCountsCache = triggerCounts;
     triggerCountsCacheTimestamp = Date.now();
-    console.log(`✅ Cached trigger counts for ${Object.keys(triggerCounts).length} data sources`);
 
     return triggerCounts;
   } catch (error) {
@@ -306,10 +294,8 @@ async function executeDatabaseQuery(dataSource, query, parameters) {
     const plugin = dataSourceEntry.pluginInstance;
 
     // Execute query using plugin's executeQuery method
-    console.log(`🔍 Executing ${dataSource.databaseType} query: ${query}`);
     const result = await plugin.executeQuery(query, parameters);
 
-    console.log(`✅ ${dataSource.databaseType} query executed successfully`);
     return {
       data: result,
       message: `${dataSource.databaseType} query executed successfully`,
@@ -343,19 +329,12 @@ async function executeAVEVAPIQuery(dataSource, query, parameters) {
       }
 
       if (isDirectUrl) {
-        console.log(`🌐 AVEVA PI direct URL query: ${query}`);
       } else if (isSqlQuery) {
-        console.log(`🔍 AVEVA PI SQL query: ${query}`);
       }
     }
 
     // Execute query using plugin's executeQuery method
-    console.log(`🔍 Executing AVEVA PI query: ${query}`);
-    console.log(`📋 Parameters:`, parameters);
     const result = await plugin.executeQuery(query, parameters);
-
-    console.log(`✅ AVEVA PI query executed successfully - returned ${Array.isArray(result.data) ? result.data.length : 'unknown'} records`);
-    console.log('📊 Sample result data:', Array.isArray(result.data) && result.data.length > 0 ? result.data.slice(0, 3) : 'no data');
 
     return {
       data: result.data,
@@ -642,15 +621,11 @@ router.post('/data-sources/:id/test', async (req, res) => {
 
     const result = await dataSourceManager.testDataSource(id);
 
-    console.log(`🔍 Test result for ${id}:`, { success: result.success, preview: preview });
-
     // If preview is requested and connection is successful, get database preview
     let previewData = null;
     if (preview && result.success) {
-      console.log(`📊 Getting database preview for ${id}...`);
       try {
         previewData = await getDatabasePreview(id);
-        console.log(`✅ Preview completed for ${id}, found ${previewData?.tables?.length || 0} tables`);
       } catch (previewError) {
         console.warn(`Preview failed for ${id}:`, previewError.message);
         // Don't fail the whole request if preview fails
@@ -676,12 +651,6 @@ router.post('/data-sources/:id/test', async (req, res) => {
       console.error('Failed to log data source test:', auditError);
       // Don't fail the request if audit logging fails
     }
-
-    console.log(`📤 Response sent for ${id}:`, {
-      success: result.success,
-      hasPreview: !!previewData,
-      previewTables: previewData?.tables?.length || 0
-    });
   } catch (error) {
     console.error(`Error testing data source ${req.params.id}:`, error);
     res.status(500).json({
@@ -834,37 +803,22 @@ router.post('/data-sources/:id/query', async (req, res) => {
     const { id } = req.params;
     const { query, parameters = {}, interval, limit, dualQuery, queryMode, tag } = req.body;
 
-    console.log('🔍 [BACKEND] Query endpoint called');
-    console.log('🔍 [BACKEND] Data source ID:', id);
-    console.log('🔍 [BACKEND] Query:', query);
-    console.log('🔍 [BACKEND] Parameters:', JSON.stringify(parameters, null, 2));
-    console.log('🔍 [BACKEND] Interval in parameters:', parameters?.interval);
-    console.log('🔍 [BACKEND] Interval from req.body:', interval);
-    console.log('🔍 [BACKEND] Dual query from req.body:', dualQuery, '(type:', typeof dualQuery, ')');
-    console.log('🔍 [BACKEND] Query mode from req.body:', queryMode, '(type:', typeof queryMode, ')');
-    console.log('🔍 [BACKEND] Full request body:', JSON.stringify(req.body, null, 2));
-
     // ✅ FIX: Include interval, dualQuery, queryMode, and limit from req.body into parameters if they exist
     const enrichedParameters = { ...parameters };
     if (interval !== undefined) {
       enrichedParameters.interval = interval;
-      console.log('🔧 [BACKEND] Added interval to parameters:', enrichedParameters.interval);
     }
     if (dualQuery !== undefined) {
       enrichedParameters.dualQuery = dualQuery;
-      console.log('🔧 [BACKEND] Added dualQuery to parameters:', enrichedParameters.dualQuery, '(type:', typeof enrichedParameters.dualQuery, ')');
     }
     if (queryMode !== undefined) {
       enrichedParameters.queryMode = queryMode;
-      console.log('🔧 [BACKEND] Added queryMode to parameters:', enrichedParameters.queryMode, '(type:', typeof enrichedParameters.queryMode, ')');
     }
     if (limit !== undefined) {
       enrichedParameters.limit = limit;
-      console.log('🔧 [BACKEND] Added limit to parameters:', enrichedParameters.limit, '(type:', typeof enrichedParameters.limit, ')');
     }
     if (tag !== undefined) {
       enrichedParameters.tag = tag;
-      console.log('🏷️ [BACKEND] Added tag to parameters:', enrichedParameters.tag, '(type:', typeof enrichedParameters.tag, ')');
     }
 
     if (!query) {
@@ -1040,8 +994,6 @@ router.get('/data-sources/:id/tables', async (req, res) => {
       }
     }
 
-    console.log(`📊 Found ${tables.length} tables in database ${dataSource.config.database}`);
-
     res.json({
       success: true,
       tables,
@@ -1147,7 +1099,6 @@ router.get('/data-sources/:id/tables/:table/columns', async (req, res) => {
 
     // Ensure plugin has active connection
     if (!plugin.pool && !plugin.connection) {
-      console.log(`🔄 Reconnecting MySQL plugin for ${id}...`);
       try {
         const freshPlugin = pluginLoader.getPlugin(dataSource.plugin);
         await freshPlugin.connect(dataSource.config);
@@ -1206,8 +1157,6 @@ router.get('/data-sources/:id/tables/:table/columns', async (req, res) => {
 
     // Extract column names
     const columns = columnsResult.map(row => row[columnKey]).filter(name => name);
-
-    console.log(`📊 Found ${columns.length} columns in table ${table}`);
 
     res.json({
       success: true,
@@ -1455,8 +1404,6 @@ router.post('/test-aveva-url', async (req, res) => {
     // No parameter modification - user is responsible for valid URLs
     fullUrl = url;
 
-    console.log(`🌐 Testing AVEVA PI URL as-is: ${fullUrl}`);
-
     // Make request to AVEVA PI server
     const axios = (await import('axios')).default;
     const https = (await import('https')).default;
@@ -1486,13 +1433,6 @@ router.post('/test-aveva-url', async (req, res) => {
     });
 
     const response = await axiosInstance.get(fullUrl);
-
-    console.log(`📡 Response received:`, {
-      status: response.status,
-      statusText: response.statusText,
-      contentType: response.headers['content-type'],
-      contentLength: response.headers['content-length']
-    });
 
     // Return raw response
     const result = {
@@ -1616,11 +1556,8 @@ router.get('/dashboard-data', async (req, res) => {
     // Load trigger groups (if exists)
     let groups = [];
     try {
-      console.log('📁 Loading trigger groups from database');
-      
       // Get groups from database
       const dbGroups = db.preparedStatements.getAllTriggerGroups.all();
-      console.log(`� Found ${dbGroups.length} trigger groups in database`);
 
       // Convert to array format for frontend
       groups = dbGroups.map(group => {
@@ -1644,8 +1581,6 @@ router.get('/dashboard-data', async (req, res) => {
           updatedAt: group.updated_at
         };
       });
-      
-      console.log(`📋 Returning ${groups.length} trigger groups from database`);
     } catch (error) {
       console.error('❌ Error loading trigger groups from database:', error);
       groups = [];
