@@ -28,18 +28,7 @@ export const config = {
 
   // CORS Configuration
   cors: {
-    origin: [
-      'http://localhost:3000',
-      'http://127.0.0.1:3000',
-      'http://localhost:3001',
-      'http://127.0.0.1:3001',
-      // Frontend ngrok tunnel for remote access
-      // IMPORTANT: Update this with your active ngrok frontend URL when testing via ngrok
-      // Example: 'https://your-frontend-id.ngrok-free.app'
-      'https://02d900e8f817.ngrok-free.app',
-      'https://ea0f4c8470aa.ngrok-free.app'
-      // Note: Ngrok URLs change on each restart (free tier), so update accordingly
-    ],
+    origin: (process.env.CORS_ORIGINS || 'http://localhost:3000,http://127.0.0.1:3000,http://localhost:3001,http://127.0.0.1:3001').split(',').map(o => o.trim()),
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'X-API-Key', 'Authorization', 'X-User', 'ngrok-skip-browser-warning'],
     credentials: true,

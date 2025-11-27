@@ -15,7 +15,7 @@ export default function WhatsAppHub() {
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const response = await fetch('http://localhost:8001/whatsapp/status');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/whatsapp/status`);
         if (response.ok) {
           const data = await response.json();
           setConnectionStatus(data.status || 'disconnected');

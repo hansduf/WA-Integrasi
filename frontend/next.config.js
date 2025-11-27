@@ -9,7 +9,7 @@ const nextConfig = {
     'https://ea0f4c8470aa.ngrok-free.app'
   ],
   async rewrites() {
-    const backendUrl = process.env.BACKEND_URL || 'http://localhost:8001';
+    const backendUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8001';
     return [
       {
         source: '/api/:path*',

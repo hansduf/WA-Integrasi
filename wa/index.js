@@ -1,4 +1,4 @@
-const { Client, LocalAuth } = require('whatsapp-web.js');
+﻿const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const QRCode = require('qrcode');
 const fs = require('fs');
@@ -14,12 +14,13 @@ require('dotenv').config();
 // Simple config for WhatsApp bot (to avoid module system conflicts)
 const config = {
   server: {
-    port: process.env.PORT || 8001
+    host: process.env.BACKEND_HOST || 'localhost',
+    port: process.env.BACKEND_PORT || process.env.PORT || 8001
   }
 };
 
 // UNIVERSAL DATA SYSTEM INTEGRATION
-const API_BASE_URL = `http://localhost:${config.server.port}`;
+const API_BASE_URL = `http://${config.server.host}:${config.server.port}`;
 const API_KEY = process.env.API_KEY || 'universal-api-key-2025';
 const PI_API_URL = `${API_BASE_URL}/pi/ask`;
 const UPLOAD_URL = `${API_BASE_URL}/pi/upload`;
@@ -1113,7 +1114,7 @@ async function saveMessageDataToAPI(message, sender, isGroup) {
                 isBusiness: contact.isBusiness || false,
                 isEnterprise: contact.isEnterprise || false,
                 verifiedName: contact.verifiedName || null,
-                isMyContact: contact.isMyContact || false,
+                isMyContact: contact.isMyContact !== undefined ? contact.isMyContact : false,
                 isBlocked: contact.isBlocked || false
             };
         } catch (error) {
@@ -1212,7 +1213,7 @@ async function saveMessageDataToAPI(message, sender, isGroup) {
 
         // Save message to API
         try {
-            await axios.post('http://localhost:8001/api/messages', {
+            await axios.post(`${API_BASE_URL}/api/messages`, {
                 id: message.id.id,
                 type: message.type,
                 content: message.body,
@@ -1247,7 +1248,7 @@ async function saveMessageDataToAPI(message, sender, isGroup) {
 
             const phoneToSend = normalizePhone(contactInfo.number || sender);
 
-            await axios.post('http://localhost:8001/api/messages/contacts', {
+            await axios.post(`${API_BASE_URL}/api/messages/contacts`, {
                 id: sender,
                 name: contactInfo.name,
                 phone: phoneToSend,

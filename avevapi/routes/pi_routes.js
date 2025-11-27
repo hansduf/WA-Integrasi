@@ -11,6 +11,13 @@ import { invalidateTriggerCountsCache } from './data-sources.js';
 
 const router = express.Router();
 
+// Sanitize error messages - mask sensitive information like IP addresses
+function sanitizeErrorForUser(message) {
+  if (!message) return 'Unknown error';
+  // Mask IP addresses (xxx.xxx.xxx.xxx format with optional :port)
+  return message.replace(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d+)?/g, '[REDACTED]');
+}
+
 // Helper functions to read from database (replacing old JSON file reads)
 function readTriggers() {
   // Get all triggers from database and convert to old format for compatibility
@@ -725,7 +732,9 @@ router.post('/ask', async (req, res) => {
 
         } catch (err) {
           console.error(`❌ Query Error for ${name}:`, err.message);
-          return res.json({ answer: `❌ *${name}*: Error executing query - ${err.message}` });
+          // Sanitize error message - mask IP addresses
+          const sanitizedError = sanitizeErrorForUser(err.message);
+          return res.json({ answer: `❌ *${name}*: Error executing query - ${sanitizedError}` });
         }
       }
 

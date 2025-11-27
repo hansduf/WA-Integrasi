@@ -40,7 +40,7 @@ export default function WhatsAppConnectionForm() {
     
     const refreshQR = async () => {
       try {
-        const response = await fetch('http://localhost:8001/whatsapp/status', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/whatsapp/status`, {
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ export default function WhatsAppConnectionForm() {
   const checkWhatsAppStatus = async () => {
     try {
       setError(null);
-      const response = await fetch('http://localhost:8001/whatsapp/status', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/whatsapp/status`, {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -137,7 +137,7 @@ export default function WhatsAppConnectionForm() {
     setError(null);
     try {
       // Step 1: Start the WhatsApp bot
-      const connectResponse = await fetch('http://localhost:8001/whatsapp/connect', {
+      const connectResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/whatsapp/connect`, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -184,7 +184,7 @@ export default function WhatsAppConnectionForm() {
         try {
           console.log(`🔄 Checking QR status (attempt ${attempt}/${maxRetries})`);
 
-          const statusResponse = await fetch('http://localhost:8001/whatsapp/status', {
+          const statusResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/whatsapp/status`, {
             method: 'GET',
             headers: {
               'Accept': 'application/json',
@@ -266,7 +266,7 @@ export default function WhatsAppConnectionForm() {
     try {
       setError(null);
       setIsScanning(false); // Stop QR refresh polling
-      const response = await fetch('http://localhost:8001/whatsapp/disconnect', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/whatsapp/disconnect`, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
