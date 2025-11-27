@@ -1,8 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
-  },
+  // Remove experimental.appDir - it's default in Next.js 14
   // Allow ngrok domains for development
   allowedDevOrigins: [
     'https://02d900e8f817.ngrok-free.app',
