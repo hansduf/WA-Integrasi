@@ -1,14 +1,16 @@
 version: '3.8'
 
 services:
-  backend:
+  app:
     build:
-      context: ./avevapi
+      context: .
       dockerfile: Dockerfile
-    container_name: aveva-pi-backend
+    container_name: aveva-pi
     ports:
       - "8001:8001"
+      - "3000:3000"
     environment:
+      - NODE_ENV=development
       - PORT=8001
       - HOST=0.0.0.0
       - CORS_ORIGINS=http://localhost:3000
@@ -17,50 +19,12 @@ services:
       - ALLOW_NGROK_COOKIES=true
       - ADMIN_USERNAME=admin
       - ADMIN_PASSWORD=CHANGE_ME_NOW!
-      - JWT_SECRET=change-this-secret-in-production-min-32-characters
-      - JWT_REFRESH_SECRET=change-this-refresh-secret-in-production-min-32-characters
-      - JWT_EXPIRES_IN=1h
-      - JWT_REFRESH_EXPIRES_IN=7d
-      - BCRYPT_ROUNDS=12
-      - SESSION_TIMEOUT_MINUTES=60
-      - ACCOUNT_LOCK_ATTEMPTS=5
-      - ACCOUNT_LOCK_DURATION_MINUTES=30
-      - RATE_LIMIT_MAX_ATTEMPTS=10
-      - RATE_LIMIT_WINDOW_MINUTES=60
-    depends_on:
-      - whatsapp
-    restart: unless-stopped
-    networks:
-      - aveva-pi-network
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: aveva-pi-frontend
-    ports:
-      - "3000:3000"
-    environment:
       - NEXT_PUBLIC_BACKEND_URL=http://localhost:8001
       - NEXT_PUBLIC_API_KEY=universal-api-key-2025
       - NEXT_PUBLIC_TRIGGERS_ADMIN_KEY=universal-api-key-2025
-    restart: unless-stopped
-    networks:
-      - aveva-pi-network
-
-  whatsapp:
-    build:
-      context: ./wa
-      dockerfile: Dockerfile
-    container_name: aveva-pi-whatsapp
-    environment:
       - API_BASE_URL=http://localhost:8001
-      - BACKEND_HOST=backend
+      - BACKEND_HOST=localhost
       - BACKEND_PORT=8001
     restart: unless-stopped
-    networks:
-      - aveva-pi-network
-
-networks:
-  aveva-pi-network:
-    driver: bridge
+    stdin_open: true
+    tty: true
