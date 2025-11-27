@@ -30,9 +30,12 @@ WORKDIR /app
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
-# Copy dan set start script
+# Copy entrypoint script
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
+
+# Create data directories untuk database
+RUN mkdir -p /app/data /app/avevapi/data /app/wa/sessions /app/logs
 
 # Expose ports
 EXPOSE 8001 3000
