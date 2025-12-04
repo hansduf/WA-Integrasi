@@ -6,6 +6,8 @@ import WhatsAppConnectionForm from './WhatsAppConnectionForm';
 import WhatsAppDashboard from './WhatsAppDashboard';
 import WhatsAppMessageSender from './WhatsAppMessageSender';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8001';
+
 export default function WhatsAppHub() {
   const [activeSubTab, setActiveSubTab] = useState('dashboard');
   const [connectionStatus, setConnectionStatus] = useState<string>('disconnected');
@@ -15,7 +17,7 @@ export default function WhatsAppHub() {
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/whatsapp/status`);
+        const response = await fetch(`${API_BASE_URL}/whatsapp/status`);
         if (response.ok) {
           const data = await response.json();
           setConnectionStatus(data.status || 'disconnected');

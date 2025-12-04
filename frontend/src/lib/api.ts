@@ -31,6 +31,7 @@ class ApiClient {
       headers: {
         'Content-Type': 'application/json',
         'ngrok-skip-browser-warning': 'true', // Skip ngrok browser warning
+        'X-API-Key': process.env.NEXT_PUBLIC_API_KEY || '', // Add API key for public endpoints
         ...options.headers,
       },
     };

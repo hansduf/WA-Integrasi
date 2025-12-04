@@ -1,30 +1,81 @@
 version: '3.8'
 
 services:
-  app:
+  # Backend API Service
+  backend:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: aveva-pi
+      dockerfile: Dockerfile.backend
+    container_name: aveva-backend
     ports:
-      - "8001:8001"
-      - "3000:3000"
+      - "0.0.0.0:8001:8001"
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
       - PORT=8001
       - HOST=0.0.0.0
-      - CORS_ORIGINS=http://localhost:3000
+      # Admin user
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=CHANGE_ME_NOW!
+      # API Keys
       - API_KEY=universal-api-key-2025
       - TRIGGERS_ADMIN_KEY=universal-api-key-2025
       - ALLOW_NGROK_COOKIES=true
-      - ADMIN_USERNAME=admin
-      - ADMIN_PASSWORD=CHANGE_ME_NOW!
-      - NEXT_PUBLIC_BACKEND_URL=http://localhost:8001
+      # CORS - Allow frontend to access backend
+      - CORS_ORIGINS=http://192.168.137.221:3000,http://localhost:3000
+    volumes:
+      - ./avevapi/data:/app/avevapi/data
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Frontend Service
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: aveva-frontend
+    ports:
+      - "0.0.0.0:3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # Backend URL untuk external clients (gunakan IP local lokal, bukan public IP)
+      - NEXT_PUBLIC_BACKEND_URL=http://192.168.137.221:8001
       - NEXT_PUBLIC_API_KEY=universal-api-key-2025
       - NEXT_PUBLIC_TRIGGERS_ADMIN_KEY=universal-api-key-2025
-      - API_BASE_URL=http://localhost:8001
-      - BACKEND_HOST=localhost
-      - BACKEND_PORT=8001
+    networks:
+      - app-network
+    depends_on:
+      backend:
+        condition: service_healthy
     restart: unless-stopped
-    stdin_open: true
-    tty: true
+
+  # WhatsApp Bot Service
+  wa-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile.wa
+    container_name: aveva-wa-bot
+    environment:
+      - NODE_ENV=production
+      # Internal backend communication (via docker network)
+      - API_BASE_URL=http://backend:8001
+      - API_KEY=universal-api-key-2025
+      - TRIGGERS_ADMIN_KEY=universal-api-key-2025
+    volumes:
+      - ./wa/sessions:/app/wa/sessions
+    networks:
+      - app-network
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge

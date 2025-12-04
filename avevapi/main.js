@@ -1217,20 +1217,36 @@ async function initializeDefaultAdmin() {
     const users = db.preparedStatements.getAllUsers.all();
     
     if (users.length === 0) {
-      // SECURITY NOTE: Automatic creation of a default admin has been disabled.
-      // Creating an admin account on first startup posed a security risk when
-      // fallback credentials were used. To create the first admin user, run
-      // the provided one-time setup script (`scripts/create-admin.js`) from the
-      // `avevapi` directory. The script supports interactive input or reading
-      // the credentials from environment variables `ADMIN_USERNAME` and
-      // `ADMIN_PASSWORD`.
-      console.warn('🛡️ No users found. Default admin auto-creation is disabled for security.');
-      console.log('ℹ️ Create the first admin by running:');
-      console.log('   cd avevapi');
-      console.log('   node scripts/create-admin.js');
-      console.log('Or via env vars (CI):');
-      console.log('   ADMIN_USERNAME=admin ADMIN_PASSWORD="$SUPER_SECRET" node scripts/create-admin.js');
-      return;
+      // Auto-create admin if env vars are provided
+      const adminUsername = process.env.ADMIN_USERNAME;
+      const adminPassword = process.env.ADMIN_PASSWORD;
+      
+      if (adminUsername && adminPassword) {
+        console.log('🔄 No users found. Auto-creating admin user from environment variables...');
+        
+        // Import hash function
+        const { hashPassword } = await import('./utils/security.utils.js');
+        const passwordHash = await hashPassword(adminPassword);
+        
+        try {
+          const newAdmin = await db.createDefaultAdminUser(adminUsername, passwordHash);
+          if (newAdmin) {
+            console.log(`✅ Admin user auto-created: ${newAdmin.username} (id: ${newAdmin.id})`);
+          } else {
+            console.error('❌ Failed to create admin user');
+          }
+        } catch (createError) {
+          console.error('❌ Error creating admin user:', createError.message);
+        }
+      } else {
+        // No env vars provided - ask to create manually
+        console.warn('🛡️ No users found. Default admin auto-creation is disabled (missing env vars).');
+        console.log('ℹ️ Create the first admin by running:');
+        console.log('   cd avevapi');
+        console.log('   node scripts/create-admin.js');
+        console.log('Or via env vars (CI):');
+        console.log('   ADMIN_USERNAME=admin ADMIN_PASSWORD="$SUPER_SECRET" node scripts/create-admin.js');
+      }
     } else {
       console.log(`✅ Authentication system ready (${users.length} user(s) found)`);
     }

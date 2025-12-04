@@ -12,15 +12,23 @@ require('dotenv').config();
 // const config = require('../avevapi/config/index.js').config;
 
 // Simple config for WhatsApp bot (to avoid module system conflicts)
+// Priority for backend URL resolution:
+// 1) Explicit API_BASE_URL env var
+// 2) BACKEND_HOST / BACKEND_PORT (global)
+// 3) Fallback to localhost:8001
+const host = process.env.BACKEND_HOST || 'localhost';
+const port = process.env.BACKEND_PORT || process.env.PORT || 8001;
 const config = {
-  server: {
-    host: process.env.BACKEND_HOST || 'localhost',
-    port: process.env.BACKEND_PORT || process.env.PORT || 8001
-  }
+    server: {
+        host,
+        port
+    }
 };
 
 // UNIVERSAL DATA SYSTEM INTEGRATION
-const API_BASE_URL = `http://${config.server.host}:${config.server.port}`;
+// Allow explicit API_BASE_URL to fully override the computed host/port
+const API_BASE_URL = process.env.API_BASE_URL || `http://${config.server.host}:${config.server.port}`;
+console.log('🔗 WA bot / API_BASE_URL:', API_BASE_URL);
 const API_KEY = process.env.API_KEY || 'universal-api-key-2025';
 const PI_API_URL = `${API_BASE_URL}/pi/ask`;
 const UPLOAD_URL = `${API_BASE_URL}/pi/upload`;
