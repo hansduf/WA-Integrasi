@@ -1,5 +1,9 @@
 // API client for backend communication
-export const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://upgraded-space-guacamole-r4r7rwqxpw652x967-8001.app.github.dev';
+if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
+  throw new Error('NEXT_PUBLIC_BACKEND_URL is required. Must be set via Docker build args.');
+}
+
+export const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 if (typeof window !== 'undefined') {
   // Log API base URL for local development

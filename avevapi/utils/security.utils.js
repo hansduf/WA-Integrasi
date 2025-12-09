@@ -209,21 +209,13 @@ export function getUserAgent(req) {
  * @returns {object} - Cookie options
  */
 export function getCookieOptions(rememberMe = false) {
-  const isProduction = process.env.NODE_ENV === 'production';
+  // Detect HTTPS from environment variables
+  // Only trust explicit HTTPS=true flag (for cookies to work via HTTP in development)
+  // HTTPS=true: explicit flag for HTTPS protocol
+  const isHttps = process.env.HTTPS === 'true';
   
-  // DEBUG: Log environment variables
   console.log('🍪 getCookieOptions called:');
-  console.log('   NODE_ENV:', process.env.NODE_ENV);
-  console.log('   FORCE_HTTPS:', process.env.FORCE_HTTPS);
-  console.log('   ALLOW_NGROK_COOKIES:', process.env.ALLOW_NGROK_COOKIES);
-  
-  // Treat as HTTPS when in production, or explicitly forced for development tunnels (ngrok, etc.)
-  // FORCE_HTTPS=true: general flag to force HTTPS behavior
-  // ALLOW_NGROK_COOKIES=true: explicit flag for ngrok development (more semantic)
-  const isHttps = process.env.NODE_ENV === 'production' || 
-                  process.env.FORCE_HTTPS === 'true' || 
-                  process.env.ALLOW_NGROK_COOKIES === 'true';
-  
+  console.log('   HTTPS:', process.env.HTTPS);
   console.log('   → isHttps calculated:', isHttps);
   console.log('   → Will use: secure=' + isHttps + ', sameSite=' + (isHttps ? 'none' : 'lax'));
   
@@ -239,8 +231,8 @@ export function getCookieOptions(rememberMe = false) {
 
   // For cross-domain scenarios (ngrok), don't set domain to allow subdomain flexibility
   // Browser will use the domain from the response automatically
-  if (isProduction) {
-    // Only set domain in production if needed
+  if (isHttps) {
+    // Only set domain in HTTPS if needed
     // options.domain = 'your-production-domain.com';
   }
 

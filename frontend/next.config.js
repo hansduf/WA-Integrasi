@@ -5,7 +5,11 @@ const nextConfig = {
   // Allow ngrok domains for development
   // Note: allowedDevOrigins is not a valid Next.js config option, removed
   async rewrites() {
-    const backendUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'https://upgraded-space-guacamole-r4r7rwqxpw652x967-8001.app.github.dev/';
+    // Get backend URL from build argument (set via Docker ARG)
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!backendUrl) {
+      throw new Error('NEXT_PUBLIC_BACKEND_URL is required (set via Docker build args)');
+    }
     return [
       {
         source: '/api/:path*',

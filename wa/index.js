@@ -15,9 +15,12 @@ require('dotenv').config();
 // Priority for backend URL resolution:
 // 1) Explicit API_BASE_URL env var
 // 2) BACKEND_HOST / BACKEND_PORT (global)
-// 3) Fallback to localhost:8001
-const host = process.env.BACKEND_HOST || 'localhost';
-const port = process.env.BACKEND_PORT || process.env.PORT || 8001;
+// 3) BACKEND_HOST and BACKEND_PORT are REQUIRED
+const host = process.env.BACKEND_HOST;
+const port = process.env.BACKEND_PORT || process.env.PORT;
+if (!host || !port) {
+  throw new Error('BACKEND_HOST and BACKEND_PORT environment variables are required');
+}
 const config = {
     server: {
         host,

@@ -8,11 +8,12 @@ services:
       dockerfile: Dockerfile.backend
     container_name: aveva-backend
     ports:
-      - "0.0.0.0:8001:8001"
+      - "0.0.0.0:8002:8002"
     environment:
       - NODE_ENV=production
-      - PORT=8001
+      - PORT=8002
       - HOST=0.0.0.0
+      - HTTPS=false  # Set to 'true' for HTTPS/production deployment
       # Admin user
       - ADMIN_USERNAME=admin
       - ADMIN_PASSWORD=CHANGE_ME_NOW!
@@ -20,15 +21,15 @@ services:
       - API_KEY=universal-api-key-2025
       - TRIGGERS_ADMIN_KEY=universal-api-key-2025
       - ALLOW_NGROK_COOKIES=true
-      # CORS - Allow frontend to access backend
-      - CORS_ORIGINS=https://upgraded-space-guacamole-r4r7rwqxpw652x967-3000.app.github.dev
+      # CORS - Allow frontend to access backend (REQUIRED - set your network IP)
+      - CORS_ORIGINS=http://192.168.137.221:3002
     volumes:
       - ./avevapi/data:/app/avevapi/data
     networks:
       - app-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8002/health"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -38,14 +39,16 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.frontend
+      args:
+        - NEXT_PUBLIC_BACKEND_URL=http://192.168.137.221:8002
     container_name: aveva-frontend
     ports:
-      - "0.0.0.0:3000:3000"
+      - "0.0.0.0:3002:3002"
     environment:
       - NODE_ENV=production
-      - PORT=3000
+      - PORT=3002
       # Backend URL untuk external clients (gunakan IP local lokal, bukan public IP)
-      - NEXT_PUBLIC_BACKEND_URL=https://upgraded-space-guacamole-r4r7rwqxpw652x967-8001.app.github.dev
+      - NEXT_PUBLIC_BACKEND_URL=http://192.168.137.221:8002
       - NEXT_PUBLIC_API_KEY=universal-api-key-2025
       - NEXT_PUBLIC_TRIGGERS_ADMIN_KEY=universal-api-key-2025
     networks:
@@ -64,7 +67,9 @@ services:
     environment:
       - NODE_ENV=production
       # Internal backend communication (via docker network)
-      - API_BASE_URL=http://backend:8001
+      - BACKEND_HOST=backend
+      - BACKEND_PORT=8002
+      - API_BASE_URL=http://backend:8002
       - API_KEY=universal-api-key-2025
       - TRIGGERS_ADMIN_KEY=universal-api-key-2025
     volumes:

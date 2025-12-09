@@ -1,23 +1,26 @@
 // config/index.js
-import dotenv from 'dotenv';
-
-// Load environment variables (optional)
-dotenv.config();
-
 /**
  * Universal Data Platform Configuration
  * Minimal configuration needed - data sources are created dynamically
  */
+// Validate required environment variables
+if (!process.env.PORT) {
+  throw new Error('PORT is required. Must be set via Docker environment.');
+}
+if (!process.env.HOST) {
+  throw new Error('HOST is required. Must be set via Docker environment.');
+}
+
 export const config = {
   // Server Configuration
   server: {
-    port: parseInt(process.env.PORT) || 8001,
-    host: process.env.HOST || 'localhost'
+    port: parseInt(process.env.PORT),
+    host: process.env.HOST
   },
 
   // API Configuration (required for security)
   api: {
-    baseUrl: process.env.API_BASE_URL || `http://${process.env.HOST || 'localhost'}:${process.env.PORT || 8001}/api`,
+    baseUrl: process.env.API_BASE_URL || `http://${process.env.HOST}:${process.env.PORT}/api`,
     key: process.env.API_KEY || 'universal-api-key-2025'
   },
 
@@ -28,10 +31,10 @@ export const config = {
 
   // CORS Configuration
   cors: {
-    origin: (process.env.CORS_ORIGINS || 'http://localhost:3000,http://127.0.0.1:3000,http://localhost:3001,http://127.0.0.1:3001').split(',').map(o => o.trim()),
+    origin: (process.env.CORS_ORIGINS || '').split(',').filter(o => o.trim()).map(o => o.trim()),
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'X-API-Key', 'Authorization', 'X-User', 'ngrok-skip-browser-warning'],
-    credentials: true,
+    credentials: true,  // Allow credentials (cookies) in cross-origin requests
     exposedHeaders: ['X-Auth-Cleared']
   },
 

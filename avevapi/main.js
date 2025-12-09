@@ -538,15 +538,16 @@ app.post('/whatsapp/disconnect', (req, res) => {
               output += data.toString();
             });
             netstat.on('close', () => {
-              // Look for processes using port 8001 (if any)
+              // Look for processes using backend port (from config)
+              const backendPort = config.server.port;
               const lines = output.split('\n');
               lines.forEach(line => {
-                if (line.includes(':8001') && line.includes('LISTENING')) {
+                if (line.includes(`:${backendPort}`) && line.includes('LISTENING')) {
                   const parts = line.trim().split(/\s+/);
                   const pid = parts[parts.length - 1];
                   if (pid && pid !== '0') {
                     const killPid = spawn('taskkill', ['/f', '/pid', pid], { stdio: 'ignore' });
-                    killPid.on('close', () => console.log(`Killed process ${pid} using port 8001`));
+                    killPid.on('close', () => console.log(`Killed process ${pid} using port ${backendPort}`));
                   }
                 }
               });
@@ -1290,7 +1291,7 @@ app.listen(PORT, HOST, async () => {
   console.log('');
   console.log('🚀 AVEVA PI Server started successfully!');
   console.log(`📡 Server running on port ${config.server.port}`);
-  console.log(`🔗 API Base URL: http://localhost:${config.server.port}`);
+  console.log(`🔗 API Base URL: http://${HOST}:${PORT}/api`);
   console.log(`📋 Total endpoints available: 50+ (use /health for status)`);
   console.log('');
 
