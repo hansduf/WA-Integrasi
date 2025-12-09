@@ -1,6 +1,6 @@
 export function apiFetch(path: string, options: RequestInit = {}) {
   // Use the configured backend URL (can be ngrok for remote access)
-  let backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8001';
+  let backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://upgraded-space-guacamole-r4r7rwqxpw652x967-8001.app.github.dev/';
 
   // Ensure single slash between base and path
   const base = backendUrl.replace(/\/$/, '');

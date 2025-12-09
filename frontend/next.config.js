@@ -5,7 +5,7 @@ const nextConfig = {
   // Allow ngrok domains for development
   // Note: allowedDevOrigins is not a valid Next.js config option, removed
   async rewrites() {
-    const backendUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8001';
+    const backendUrl = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'https://upgraded-space-guacamole-r4r7rwqxpw652x967-8001.app.github.dev/';
     return [
       {
         source: '/api/:path*',

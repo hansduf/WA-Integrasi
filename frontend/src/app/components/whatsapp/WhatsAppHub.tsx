@@ -6,7 +6,7 @@ import WhatsAppConnectionForm from './WhatsAppConnectionForm';
 import WhatsAppDashboard from './WhatsAppDashboard';
 import WhatsAppMessageSender from './WhatsAppMessageSender';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8001';
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://upgraded-space-guacamole-r4r7rwqxpw652x967-8001.app.github.dev';
 
 export default function WhatsAppHub() {
   const [activeSubTab, setActiveSubTab] = useState('dashboard');

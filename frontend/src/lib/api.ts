@@ -1,5 +1,5 @@
 // API client for backend communication
-export const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8001';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://upgraded-space-guacamole-r4r7rwqxpw652x967-8001.app.github.dev';
 
 if (typeof window !== 'undefined') {
   // Log API base URL for local development

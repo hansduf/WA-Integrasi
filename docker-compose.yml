@@ -21,7 +21,7 @@ services:
       - TRIGGERS_ADMIN_KEY=universal-api-key-2025
       - ALLOW_NGROK_COOKIES=true
       # CORS - Allow frontend to access backend
-      - CORS_ORIGINS=http://192.168.137.221:3000,http://localhost:3000
+      - CORS_ORIGINS=https://upgraded-space-guacamole-r4r7rwqxpw652x967-3000.app.github.dev
     volumes:
       - ./avevapi/data:/app/avevapi/data
     networks:
@@ -45,7 +45,7 @@ services:
       - NODE_ENV=production
       - PORT=3000
       # Backend URL untuk external clients (gunakan IP local lokal, bukan public IP)
-      - NEXT_PUBLIC_BACKEND_URL=http://192.168.137.221:8001
+      - NEXT_PUBLIC_BACKEND_URL=https://upgraded-space-guacamole-r4r7rwqxpw652x967-8001.app.github.dev
       - NEXT_PUBLIC_API_KEY=universal-api-key-2025
       - NEXT_PUBLIC_TRIGGERS_ADMIN_KEY=universal-api-key-2025
     networks:

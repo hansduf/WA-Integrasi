@@ -1257,12 +1257,13 @@ async function initializeDefaultAdmin() {
 }
 
 const PORT = config.server.port;
+const HOST = config.server.host || '0.0.0.0';
 
 // Start server with plugin initialization
-app.listen(PORT, async () => {
+app.listen(PORT, HOST, async () => {
   console.log(`🚀 Universal Data Platform v2.0.0`);
-  console.log(`📡 Server listening on ${config.server.host}:${PORT}`);
-  console.log(`🔗 API Base URL: http://${config.server.host}:${PORT}/api`);
+    console.log(`📡 Server listening on ${HOST}:${PORT}`);
+      console.log(`🔗 API Base URL: http://${config.server.host}:${PORT}/api`);
   console.log(`� API Key: ${config.api.key}`);
   console.log('');
 
