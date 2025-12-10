@@ -1,201 +1,90 @@
-# 🚀 AVEVA PI - Universal Data Platform
+# AVEVA PI - WhatsApp Data Platform
 
-**Universal Data Platform** yang memungkinkan pengguna mengelola koneksi database, membuat triggers otomatis, dan mengakses data via WhatsApp Bot.
+## Cara Setup
 
----
-
-## 📋 Dokumentasi
-
-### 🔑 File Penting
-
-| File | Tujuan |
-|------|--------|
-| **README.md** (ini) | Quick start & overview |
-| **ARCHITECTURE_CORRECTED.md** | Arsitektur sistem yang benar |
-| **BACKEND_REFACTORING_PLAN.md** | Plan refactoring backend & bot |
-| **INSTALLATION.md** | Setup & deployment instructions |
-
-### 📚 Legacy Documentation (Archive)
-Dokumentasi lama disimpan di `/archive` folder untuk referensi.
-
----
-
-## 🏗️ Arsitektur Sistem
-
-```
-┌─────────────────────────────────────────────┐
-│           HAVIA PI Monorepo                 │
-├─────────────────────────────────────────────┤
-│                                             │
-│  Frontend (Next.js) ← Port 3000             │
-│     ↓ calls ↓                               │
-│  Backend (avevapi) ← Port 8001 (SERVER)     │
-│     ↑ called by ↑                           │
-│  Bot WhatsApp ← (CLIENT, no port)           │
-│                                             │
-└─────────────────────────────────────────────┘
-```
-
-**Komponen**:
-- **Backend** (avevapi): Express.js server + database connections + triggers
-- **Frontend** (frontend): Next.js + React dashboard
-- **Bot** (wa): WhatsApp client untuk messaging
-
----
-
-## 🚀 Quick Start
-
-### 1. Setup Backend
+### 1. Cek IP Address WSL2
+Buka terminal Ubuntu (WSL2):
 ```bash
-cd avevapi
-npm install
-npm start
-# Backend runs on http://localhost:8001
+hostname -I
 ```
-
-### 2. Setup Frontend
+Atau bisa juga:
 ```bash
-cd frontend
-npm install
-npm run dev
-# Frontend runs on http://localhost:3000
+ip addr show eth0 | grep "inet " | awk '{print $2}' | cut -d/ -f1
 ```
+Copy IP Address yang muncul (contoh: 192.168.137.221)
 
-### 3. Setup Bot
+### 2. Buka `docker-compose.yml`
+Cari dan ganti IP dengan IP Anda di **3 tempat**:
+
+1. **Backend** (Line ~23):
+   ```yaml
+   CORS_ORIGINS=http://YOUR_IP:3002
+   ```
+
+2. **Frontend - build args** (Line ~40):
+   ```yaml
+   - NEXT_PUBLIC_BACKEND_URL=http://YOUR_IP:8002
+   ```
+
+3. **Frontend - environment** (Line ~47):
+   ```yaml
+   - NEXT_PUBLIC_BACKEND_URL=http://YOUR_IP:8002
+   ```
+
+Ganti `YOUR_IP` dengan IP yang sudah dicopy dari step 1
+
+### 3. Kalo Mau Ubah Port
+Ubah di:
+- `docker-compose.yml` → `8002:8002` jadi `XXXX:8002` (backend)
+- `docker-compose.yml` → `3002:3002` jadi `YYYY:3002` (frontend)
+- `docker-compose.yml` → environment variables sesuai port baru
+- `Dockerfile.backend` → `EXPOSE 8002` jadi `EXPOSE XXXX`
+- `Dockerfile.frontend` → `EXPOSE 3002` jadi `EXPOSE YYYY`
+
+### 4. Build
 ```bash
-cd wa
-npm install
-npm start
-# Bot connects to backend at localhost:8001
+docker-compose build
 ```
 
-**Default Credentials**: Check `INSTALLATION.md`
-
----
-
-## 📁 Project Structure
-
-```
-aveva-pi/
-├── avevapi/              ← Backend (Express.js)
-│   ├── main.js          ← Entry point
-│   ├── config/          ← Configuration
-│   ├── routes/          ← API endpoints (modularized)
-│   ├── core/            ← Plugin & trigger system
-│   ├── middleware/      ← Auth & validation
-│   └── data/            ← SQLite database
-│
-├── frontend/            ← Frontend (Next.js)
-│   ├── src/app/         ← Pages
-│   ├── src/components/  ← React components
-│   └── src/lib/         ← Utilities
-│
-├── wa/                  ← WhatsApp Bot
-│   ├── index.js         ← Bot entry point
-│   ├── config/          ← Configuration
-│   ├── services/        ← (To be refactored)
-│   └── handlers/        ← (To be refactored)
-│
-└── docs/                ← Additional documentation
+### 5. Run
+```bash
+docker-compose up
 ```
 
----
+### 6. Login
+Buka di browser: `http://192.168.137.221:3002`
+- Username: `admin`
+- Password: `CHANGE_ME_NOW!`
 
-## 🔄 System Flow
+## Command Penting
 
-### User Login → Query Data Flow
+| Perintah | Fungsi |
+|----------|--------|
+| `docker-compose up` | Jalankan semua service |
+| `docker-compose down` | Stop semua service |
+| `docker-compose logs -f backend` | Lihat log backend real-time |
+| `docker-compose logs -f frontend` | Lihat log frontend real-time |
+| `docker-compose logs -f wa-bot` | Lihat log WhatsApp bot real-time |
+| `docker-compose build` | Build ulang image |
+| `docker-compose restart` | Restart semua service |
 
-```
-1. User opens Frontend (port 3000)
-2. User login
-   ↓
-3. Frontend calls Backend API (port 8001)
-   ↓
-4. Backend validates JWT token
-   ↓
-5. Backend returns user data
-   ↓
-6. Frontend shows dashboard
-   ↓
-7. User can query via:
-   a) Web dashboard (direct call to backend)
-   b) WhatsApp (bot calls backend)
-```
-
----
-
-## 🤖 WhatsApp Bot Flow
+## Struktur Folder
 
 ```
-1. WhatsApp message arrives
-   ↓
-2. Bot receives message
-   ↓
-3. Bot calls Backend API
-   http://localhost:8001/api/messages
-   http://localhost:8001/pi/ask
-   ↓
-4. Backend processes query
-   ↓
-5. Backend returns data
-   ↓
-6. Bot sends reply to WhatsApp user
+WA-Integrasi/
+├── avevapi/           ← Backend (Express.js)
+├── frontend/          ← Frontend (Next.js)
+├── wa/                ← WhatsApp Bot
+├── docker-compose.yml ← Konfigurasi Docker
+└── Dockerfile.*       ← Image definition
 ```
 
----
+## Catatan
 
-## ⚙️ Current Work: Refactoring
-
-**Goal**: Clean up & organize codebase untuk production
-
-**What's being done**:
-- ✅ Backend: Standardize response format & error handling
-- ✅ Bot: Modularize wa/index.js (1507 → 100 lines)
-- ✅ API: Create centralized API client for bot
-- ✅ Documentation: Clear architecture & refactoring plan
-
-**See**: `BACKEND_REFACTORING_PLAN.md` for details
+- Database auto-created di `avevapi/data/`
+- WhatsApp sessions di `wa/sessions/`
+- Port default: Backend 8002, Frontend 3002
+- Ganti password admin ASAP
 
 ---
-
-## 🛠️ Tech Stack
-
-| Component | Tech |
-|-----------|------|
-| **Backend** | Node.js + Express.js + SQLite |
-| **Frontend** | Next.js + React + TypeScript + Tailwind CSS |
-| **Bot** | Node.js + whatsapp-web.js |
-| **Database** | SQLite (main) + External connections (MySQL, PostgreSQL, AVEVA PI, etc) |
-| **Auth** | JWT + API Key |
-
----
-
-## 📚 Documentation Links
-
-- **ARCHITECTURE_CORRECTED.md**: Detailed system architecture
-- **BACKEND_REFACTORING_PLAN.md**: Refactoring plan & tasks
-- **INSTALLATION.md**: Setup instructions
-- **archive/**: Legacy analysis documents
-
----
-
-## 🤝 Contributing
-
-Before making changes:
-1. Check `ARCHITECTURE_CORRECTED.md` for system design
-2. Follow `BACKEND_REFACTORING_PLAN.md` for guidelines
-3. Test locally before committing
-4. Update documentation as needed
-
----
-
-## 📞 Support
-
-- Backend issues: Check `BACKEND_REFACTORING_PLAN.md` Phase 1 (audit)
-- Bot issues: Check `BACKEND_REFACTORING_PLAN.md` Phase 3 (bot refactoring)
-- Architecture questions: See `ARCHITECTURE_CORRECTED.md`
-
----
-
-**Last Updated**: November 7, 2025  
-**Status**: Refactoring in progress ✅
+v1.0 - Simple Documentation
